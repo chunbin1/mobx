@@ -88,6 +88,7 @@ export function autorun(
         view(reaction)
     }
 
+    // 调用一次函数
     reaction.schedule_()
     return reaction.getDisposer_()
 }

@@ -132,9 +132,11 @@ export function endBatch() {
     }
 }
 
+// observed对象调用get的时候会调用这个函数
 export function reportObserved(observable: IObservable): boolean {
     checkIfStateReadsAreAllowed(observable)
 
+    // 正在进行的Reaction
     const derivation = globalState.trackingDerivation
     if (derivation !== null) {
         /**
@@ -145,6 +147,7 @@ export function reportObserved(observable: IObservable): boolean {
         if (derivation.runId_ !== observable.lastAccessedBy_) {
             observable.lastAccessedBy_ = derivation.runId_
             // Tried storing newObserving, or observing, or both as Set, but performance didn't come close...
+            // 保存观察的对象
             derivation.newObserving_![derivation.unboundDepsCount_++] = observable
             if (!observable.isBeingObserved_ && globalState.trackingContext) {
                 observable.isBeingObserved_ = true
@@ -183,6 +186,7 @@ export function reportObserved(observable: IObservable): boolean {
 
 // Called by Atom when its value changes
 export function propagateChanged(observable: IObservable) {
+    debugger
     // invariantLOS(observable, "changed start");
     if (observable.lowestObserverState_ === IDerivationState_.STALE_) {
         return

@@ -77,7 +77,9 @@ export class Reaction implements IDerivation, IReactionPublic {
     schedule_() {
         if (!this.isScheduled_) {
             this.isScheduled_ = true
+            // 推入pendingReactions
             globalState.pendingReactions.push(this)
+            // 执行reactions
             runReactions()
         }
     }
@@ -99,6 +101,7 @@ export class Reaction implements IDerivation, IReactionPublic {
                 this.isTrackPending_ = true
 
                 try {
+                    // 这个是外部传入的 例如autoRun传入
                     this.onInvalidate_()
                     if (__DEV__ && this.isTrackPending_ && isSpyEnabled()) {
                         // onInvalidate didn't trigger track right away..
@@ -134,6 +137,7 @@ export class Reaction implements IDerivation, IReactionPublic {
         this.isRunning_ = true
         const prevReaction = globalState.trackingContext // reactions could create reactions...
         globalState.trackingContext = this
+        // 这里调用view, fn就是autoRun中的第一个参数
         const result = trackDerivedFunction(this, fn, undefined)
         globalState.trackingContext = prevReaction
         this.isRunning_ = false
@@ -257,6 +261,7 @@ function runReactionsHelper() {
         }
         let remainingReactions = allReactions.splice(0)
         for (let i = 0, l = remainingReactions.length; i < l; i++) {
+            // 调用具体reaction
             remainingReactions[i].runReaction_()
         }
     }
