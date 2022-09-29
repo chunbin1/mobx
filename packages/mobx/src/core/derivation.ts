@@ -176,6 +176,7 @@ export function trackDerivedFunction<T>(derivation: IDerivation, f: () => T, con
     globalState.trackingDerivation = derivation
     globalState.inBatch++
     let result
+    // 调用f,此时如果f中有ObservableValue.get会把此时如果f中有ObservableValue注入到R._newObserving_中
     if (globalState.disableErrorBoundaries === true) {
         result = f.call(context)
     } else {
